@@ -1,60 +1,61 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Pin</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pin</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
-    <header class="navbar">
-        <div class="logo"><a href="index.html"><img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="logos"></a></div>
-        <div class="search-bar"><input type="text" placeholder="Buscar..."></div>
-        <div class="nav-actions"><a href="usuario.html" class="profile-icon">U</a></div>
-    </header>
+    <header class="navbar">
+        <div class="logo"><a href="index.html"><img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="logos"></a></div>
+        <div class="search-bar"><input type="text" placeholder="Buscar..."></div>
+        <div class="nav-actions"><a href="usuario.html" class="profile-icon">U</a></div>
+    </header>
 
-    <main class="detail-container">
-        <div class="detail-card">
-            <div class="detail-image-section">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSWktZDmls9ARLHSPPUkhncj8SseuycNfcmtw&s" alt="Imagen en detalle">
-            </div>
-            
-            <div class="detail-info-section">
-                <div class="detail-actions">
-                    <button class="btn">Guardar</button>
-                </div>
-                
-                <h1 class="detail-title">Imagen Random</h1>
-                <p class="detail-description">juasjuas ira un gato gracioso.</p>
-                
-                <div class="detail-author">
-                    <a href="usuario.html" class="profile-icon">D</a>
-                    <div>
-                        <p class="author-name"><strong>Dario Cabezas</strong></p>
-                        <p class="publish-date">Ayer mismo juasjuasjuas</p>
-                    </div>
-                </div>
+    <main class="detail-container">
+        <div class="detail-card">
+            <div class="detail-image-section">
+                <img id="pin-image" src="" alt="Imagen en detalle">
+            </div>
+            
+            <div class="detail-info-section">
+                <div class="detail-actions">
+                    <button class="btn">Guardar</button>
+                </div>
+                
+                <h1 class="detail-title" id="pin-title"></h1>
+                <p class="detail-description" id="pin-description"></p>
+                
+                <div class="detail-author">
+                    <a href="usuario.html" class="profile-icon">D</a>
+                    <div>
+                        <p class="author-name"><strong>Dario Cabezas</strong></p>
+                        <p class="publish-date">Ayer mismo juasjuasjuas</p>
+                    </div>
+                </div>
 
-                <div class="comments-section">
-                    <h3>Comentarios</h3>
-                    <div class="comments-list">
-                        <div class="comment-item">
-                            <strong>@Akemi2364:</strong> jajaja q chistoso el gato, me hizo el día.
-                        </div>
-                        <div class="comment-item">
-                            <strong>@PucioZorropastroso:</strong> Un duro
-                        </div>
-                    </div>
-                    
-                    <div class="add-comment">
-                        <input type="text" placeholder="Añadir un comentario...">
-                        <button class="btn btn-primary">Enviar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
+                <div class="comments-section">
+                    <h3>Comentarios</h3>
+                    <div class="comments-list">
+                        <div class="comment-item">
+                            <strong>@Akemi2364:</strong> jajaja q chistoso el gato, me hizo el día.
+                        </div>
+                        <div class="comment-item">
+                            <strong>@PucioZorropastroso:</strong> Un duro
+                        </div>
+                    </div>
+                    
+                    <div class="add-comment">
+                        <input type="text" placeholder="Añadir un comentario...">
+                        <button class="btn btn-primary">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="js/config.js"></script>
+    <script src="js/detail.js"></script>
 </body>
 </html>
