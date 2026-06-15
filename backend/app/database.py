@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, create_engine
 
-from app.models import User, Pin
+from app.models import User, Pin, Comment, SavedPin
 
 DATABASE_URL = "sqlite:///database.db"
 

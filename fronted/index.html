@@ -1,35 +1,53 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ProyectoPinterest</title>
-    <link rel="stylesheet" href="css/styles.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akemi PinSaved</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <header class="navbar">
+        <a class="brand" href="index.html" aria-label="Ir al inicio">
+            <img src="/imgs/Gemini_Generated_Image_wxx8n0wxx8n0wxx8.png" alt="Proyecto Pinterest">
+        </a>
 
-    <header class="navbar">
-        <div class="logo">
-            <img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="logos">
-        </div>
-        <nav class="nav-links">
-            <a href="index.html" class="active">Inicio</a>
-            <a href="#">Explorar</a>
-        </nav>
-        <div class="search-bar">
-            <input type="text" placeholder="Buscar ideas, inspiración...">
-        </div>
-        <div class="nav-actions">
-            <a href="usuario.html" class="profile-icon">U</a>
-            <a href="login.html" class="btn btn-login-nav">Iniciar Sesión</a>
-        </div>
-    </header>
+        <nav class="nav-links" aria-label="Navegacion principal">
+            <a href="index.html" class="active">Inicio</a>
+            <a href="#explorar">Explorar</a>
+        </nav>
 
-    <main class="grid-container" id="pins-container">
+        <label class="search-bar">
+            <span>Buscar</span>
+            <input type="search" placeholder="Buscar ideas, estilos o inspiracion">
+        </label>
 
-    </main>
-    <script src="js/config.js"></script>
-    <script src="js/home.js"></script>
+        <div class="nav-actions">
+            <a href="login.html" class="btn btn-ghost">Entrar</a>
+            <a href="usuario.html" class="avatar-link" aria-label="Ver perfil">D</a>
+        </div>
+    </header>
+
+    <section class="home-hero" id="explorar">
+        <div>
+            <p class="eyebrow">Akemi PinSaved - Explora y guarda ideas</p>
+            <h1>Encuentra referencias visuales para tu proximo proyecto.</h1>
+        </div>
+        <a class="btn btn-primary" href="register.html">Crear cuenta</a>
+    </section>
+
+    <main class="page-shell">
+        <div class="section-heading">
+            <h2>Inspiracion reciente</h2>
+
+        </div>
+
+        <section class="grid-container" id="pins-container" aria-live="polite">
+            <p class="state-message">Cargando pines...</p>
+        </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/home.js"></script>
 </body>
 </html>

@@ -7,41 +7,53 @@
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-
     <header class="navbar">
-        <div class="logo"><a href="index.html"><img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="logos"></a></div>
-        <div class="search-bar"><input type="text" placeholder="Buscar en tus Pines..."></div>
+        <a class="brand" href="index.html" aria-label="Ir al inicio">
+            <img src="/imgs/Gemini_Generated_Image_wxx8n0wxx8n0wxx8.png" alt="Proyecto Pinterest">
+        </a>
+
+        <label class="search-bar">
+            <span>Buscar</span>
+            <input type="search" placeholder="Buscar en tus pines">
+        </label>
+
         <div class="nav-actions">
-            <a href="index.html" class="btn">Inicio</a>
+            <a href="index.html" class="btn btn-ghost">Inicio</a>
+            <a href="crear-pin.html" class="btn btn-ghost" data-user-link>Crear</a>
+            <a href="login.html" class="btn btn-ghost" data-auth-link>Entrar</a>
+            <button class="btn btn-ghost" type="button" data-user-link data-logout>Salir</button>
         </div>
     </header>
 
-    <section class="profile-header">
-        <div class="profile-avatar">D</div>
-        <h1 class="profile-name">Dario Cabezas</h1>
-        <p class="profile-username">@dariocabezas</p>
-        <div class="profile-stats">
-            <span><strong>120</strong> Siguiendo</span> · <span><strong>345</strong> Seguidores</span>
-        </div>
-        <div class="profile-buttons">
-            <button class="btn">Compartir</button>
-            <button class="btn">Editar perfil</button>
-        </div>
-    </section>
+    <main class="page-shell">
+        <section class="profile-header">
+            <div class="profile-avatar" id="profile-avatar">U</div>
+            <p class="eyebrow">Perfil</p>
+            <h1 class="profile-name" id="profile-name">Cargando usuario...</h1>
+            <p class="profile-username" id="profile-username">@usuario</p>
 
-    <div class="profile-tabs">
-        <a href="#" class="tab active">Creados</a>
-        <a href="#" class="tab">Guardados</a>
-    </div>
+            <div class="profile-stats" aria-label="Estadisticas del perfil">
+                <span><strong id="created-count">0</strong> creados</span>
+                <span><strong id="saved-count">0</strong> guardados</span>
+            </div>
 
-    <main class="grid-container">
-        <div class="pin-card">
-            <img src="https://static.boredpanda.com/blog/wp-content/uploads/2023/02/images-with-no-context-63e65b8e165f3__700.jpg" alt="Mis Pines 1">
-        </div>
-        <div class="pin-card">
-            <img src="https://wallpapers.com/images/hd/funny-random-pictures-625-x-1109-fzu47kvatitm0rci.jpg" alt="Mis Pines 2">
-        </div>
+            <div class="profile-buttons">
+                <a class="btn btn-primary" href="crear-pin.html" data-user-link>Crear pin</a>
+            </div>
+        </section>
+
+        <nav class="profile-tabs" aria-label="Contenido del perfil">
+            <button class="tab active" type="button" data-tab="created">Creados</button>
+            <button class="tab" type="button" data-tab="saved">Guardados</button>
+        </nav>
+
+        <section class="grid-container profile-grid" id="profile-pins">
+            <p class="state-message">Cargando pines...</p>
+        </section>
     </main>
 
+    <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/profile.js"></script>
 </body>
 </html>

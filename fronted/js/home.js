@@ -1,66 +1,97 @@
-/*parte el lucho*/
-console.log("Cargando pins...");
-const pinsContainer =
-    document.getElementById(
-        "pins-container"
-    );
+const pinsContainer = document.getElementById("pins-container");
+
+function renderState(message) {
+    pinsContainer.innerHTML = `<p class="state-message">${message}</p>`;
+}
+
+function createPinCard(pin) {
+    const card = document.createElement("article");
+    card.className = "pin-card";
+
+    const link = document.createElement("a");
+    link.href = `detalle.html?id=${pin.id}`;
+    link.setAttribute("aria-label", `Ver detalle de ${pin.title}`);
+
+    const image = document.createElement("img");
+    image.src = pin.image_url;
+    image.alt = pin.title || "Imagen del pin";
+    image.loading = "lazy";
+
+    const overlay = document.createElement("div");
+    overlay.className = "pin-overlay";
+
+    const title = document.createElement("span");
+    title.textContent = pin.title || "Ver pin";
+
+    const save = document.createElement("button");
+    save.className = "btn btn-save";
+    save.type = "button";
+    save.textContent = "Guardar";
+    save.addEventListener("click", async (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const user = getCurrentUser();
+
+        if (!user) {
+            save.textContent = "Inicia sesion";
+            return;
+        }
+
+        try {
+            const response = await apiFetch(`/pins/${pin.id}/save`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: user.id
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("No se pudo guardar el pin");
+            }
+
+            save.textContent = "Guardado";
+        } catch (error) {
+            console.error(error);
+            save.textContent = "Error";
+        }
+    });
+
+    overlay.append(title, save);
+    link.appendChild(image);
+    card.append(link, overlay);
+
+    return card;
+}
 
 async function loadPins() {
-    console.log("loadPins ejecutado");
+    try {
+        renderState("Cargando pines...");
 
-    const response =
-        await fetch(
-            `${API_URL}/pins`
-        );
+        const response = await apiFetch("/pins");
 
-    const pins =
-        await response.json();
+        if (!response.ok) {
+            throw new Error("No se pudieron cargar los pines");
+        }
 
-    pinsContainer.replaceChildren();
+        const pins = await response.json();
+        pinsContainer.replaceChildren();
 
-    pins.forEach(pin => {
+        if (!pins.length) {
+            renderState("Todavia no hay pines para mostrar.");
+            return;
+        }
 
-        const card =
-            document.createElement(
-                "div"
-            );
-
-        card.className =
-            "pin-card";
-
-        const link =
-            document.createElement(
-                "a"
-            );
-
-        link.href =
-            `detalle.html?id=${pin.id}`;
-
-        const image =
-            document.createElement(
-                "img"
-            );
-
-        image.src =
-            pin.image_url;
-
-        image.alt =
-            pin.title;
-
-        link.appendChild(
-            image
-        );
-
-        card.appendChild(
-            link
-        );
-
-        pinsContainer.appendChild(
-            card
-        );
-
-    });
-
+        pins.forEach((pin) => {
+            pinsContainer.appendChild(createPinCard(pin));
+        });
+    } catch (error) {
+        console.error(error);
+        renderState("No se pudo conectar con la API. Revisa que el backend este encendido.");
+    }
 }
 
 loadPins();

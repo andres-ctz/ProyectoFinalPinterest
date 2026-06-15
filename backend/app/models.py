@@ -31,3 +31,17 @@ class Pin(SQLModel, table=True):
     user_id: int = Field(
         foreign_key="user.id"
     )
+
+
+class Comment(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    content: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    user_id: int = Field(foreign_key="user.id")
+    pin_id: int = Field(foreign_key="pin.id")
+
+
+class SavedPin(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int = Field(foreign_key="user.id")
+    pin_id: int = Field(foreign_key="pin.id")

@@ -1,61 +1,71 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle del Pin</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalle del Pin</title>
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
+    <header class="navbar">
+        <a class="brand" href="index.html" aria-label="Ir al inicio">
+            <img src="/imgs/Gemini_Generated_Image_wxx8n0wxx8n0wxx8.png" alt="Proyecto Pinterest">
+        </a>
 
-    <header class="navbar">
-        <div class="logo"><a href="index.html"><img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="logos"></a></div>
-        <div class="search-bar"><input type="text" placeholder="Buscar..."></div>
-        <div class="nav-actions"><a href="usuario.html" class="profile-icon">U</a></div>
-    </header>
+        <label class="search-bar">
+            <span>Buscar</span>
+            <input type="search" placeholder="Buscar ideas similares">
+        </label>
 
-    <main class="detail-container">
-        <div class="detail-card">
-            <div class="detail-image-section">
-                <img id="pin-image" src="" alt="Imagen en detalle">
-            </div>
-            
-            <div class="detail-info-section">
-                <div class="detail-actions">
-                    <button class="btn">Guardar</button>
-                </div>
-                
-                <h1 class="detail-title" id="pin-title"></h1>
-                <p class="detail-description" id="pin-description"></p>
-                
-                <div class="detail-author">
-                    <a href="usuario.html" class="profile-icon">D</a>
-                    <div>
-                        <p class="author-name"><strong>Dario Cabezas</strong></p>
-                        <p class="publish-date">Ayer mismo juasjuasjuas</p>
-                    </div>
-                </div>
+        <div class="nav-actions">
+            <a href="index.html" class="btn btn-ghost">Inicio</a>
+            <a href="crear-pin.html" class="btn btn-ghost" data-user-link>Crear</a>
+            <a href="login.html" class="btn btn-ghost" data-auth-link>Entrar</a>
+            <a href="usuario.html" class="avatar-link" aria-label="Ver perfil" data-avatar>D</a>
+        </div>
+    </header>
 
-                <div class="comments-section">
-                    <h3>Comentarios</h3>
-                    <div class="comments-list">
-                        <div class="comment-item">
-                            <strong>@Akemi2364:</strong> jajaja q chistoso el gato, me hizo el día.
-                        </div>
-                        <div class="comment-item">
-                            <strong>@PucioZorropastroso:</strong> Un duro
-                        </div>
-                    </div>
-                    
-                    <div class="add-comment">
-                        <input type="text" placeholder="Añadir un comentario...">
-                        <button class="btn btn-primary">Enviar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-    <script src="js/config.js"></script>
-    <script src="js/detail.js"></script>
+    <main class="detail-container">
+        <article class="detail-card">
+            <div class="detail-image-section">
+                <img id="pin-image" src="" alt="Imagen del pin">
+            </div>
+
+            <section class="detail-info-section">
+                <div class="detail-actions">
+                    <a class="btn btn-ghost" href="index.html">Volver</a>
+                    <button class="btn btn-primary" type="button" id="save-pin-btn">Guardar</button>
+                </div>
+
+                <h1 class="detail-title" id="pin-title">Cargando pin...</h1>
+                <p class="detail-description" id="pin-description"></p>
+
+                <div class="detail-author">
+                    <a href="usuario.html" class="avatar-link" id="author-avatar">D</a>
+                    <div>
+                        <p class="author-name"><strong id="author-name">Cargando autor...</strong></p>
+                        <p class="publish-date">Creador del PIN</p>
+                    </div>
+                </div>
+
+                <div class="comments-section">
+                    <h2>Comentarios</h2>
+                    <div class="comments-list" id="comments-list">
+                        <p class="state-message">Cargando comentarios...</p>
+                    </div>
+
+                    <form class="add-comment" id="comment-form">
+                        <input type="text" id="comment-input" placeholder="Anadir un comentario">
+                        <button class="btn btn-primary" type="submit">Enviar</button>
+                    </form>
+                    <p id="detail-message" class="form-message"></p>
+                </div>
+            </section>
+        </article>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/detail.js"></script>
 </body>
 </html>

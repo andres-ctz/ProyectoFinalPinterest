@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear pin - Proyecto Pinterest</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <header class="navbar">
+        <a class="brand" href="index.html" aria-label="Ir al inicio">
+            <img src="https://cdn.uc.assets.prezly.com/150844e9-af6b-47b3-a4f5-bbb950ff6521/-/crop/1081x1080/420,0/-/preview/" alt="Proyecto Pinterest">
+        </a>
+
+        <nav class="nav-links" aria-label="Navegacion principal">
+            <a href="index.html">Inicio</a>
+            <a href="crear-pin.html" class="active" data-user-link>Crear</a>
+        </nav>
+
+        <label class="search-bar">
+            <span>Buscar</span>
+            <input type="search" placeholder="Buscar ideas">
+        </label>
+
+        <div class="nav-actions">
+            <a href="login.html" class="btn btn-ghost" data-auth-link>Entrar</a>
+            <button class="btn btn-ghost" type="button" data-user-link data-logout>Salir</button>
+            <a href="usuario.html" class="avatar-link" aria-label="Ver perfil" data-avatar>D</a>
+        </div>
+    </header>
+
+    <main class="create-layout">
+        <section class="create-preview">
+            <img id="image-preview" src="" alt="">
+            <p id="preview-placeholder">La imagen de tu pin aparecera aqui.</p>
+        </section>
+
+        <section class="create-form-card">
+            <p class="eyebrow">Nuevo pin</p>
+            <h1>Sube una idea</h1>
+            <p class="subtitle">Puedes pegar una URL de imagen o elegir un archivo desde tu equipo.</p>
+
+            <form id="create-pin-form" class="auth-form">
+                <div class="form-group">
+                    <label for="title">Titulo</label>
+                    <input type="text" id="title" name="title" placeholder="Ej: Inspiracion para habitacion" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descripcion</label>
+                    <textarea id="description" name="description" placeholder="Cuenta de que trata tu pin" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="image_url">URL de imagen</label>
+                    <input type="url" id="image_url" name="image_url" placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="image_file">O subir archivo</label>
+                    <input type="file" id="image_file" name="image_file" accept="image/*">
+                </div>
+                <p id="create-message" class="form-message"></p>
+                <button type="submit" class="btn btn-primary btn-block">Publicar pin</button>
+            </form>
+        </section>
+    </main>
+
+    <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
+    <script src="js/create-pin.js"></script>
+</body>
+</html>
