@@ -1,41 +1,34 @@
 from sqlmodel import Session, select
-from app.models import User, Pin, Comment, SavedPin
+from app.auth import hash_password, verify_password
 from app.database import engine
-import hashlib
-
-
-def hash_password(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+from app.models import Comment, Pin, SavedPin, User
 
 
 def create_user(user_data):
     with Session(engine) as session:
-
         user = User(
-            username=user_data.username,
-            email=user_data.email,
+            username=user_data.username.strip(),
+            email=user_data.email.strip().lower(),
             password=hash_password(user_data.password)
         )
 
         session.add(user)
-
         session.commit()
-
         session.refresh(user)
 
         return user
-    
+
+
 def get_user_by_email(email: str):
-
     with Session(engine) as session:
+        statement = select(User).where(User.email == email.strip().lower())
+        return session.exec(statement).first()
 
-        statement = select(User).where(
-            User.email == email
-        )
 
-        user = session.exec(statement).first()
-
-        return user
+def get_user_by_username(username: str):
+    with Session(engine) as session:
+        statement = select(User).where(User.username == username.strip())
+        return session.exec(statement).first()
 
 
 def get_user_by_id(user_id: int):
@@ -44,42 +37,57 @@ def get_user_by_id(user_id: int):
 
 
 def password_matches(raw_password: str, stored_password: str) -> bool:
-    return stored_password == hash_password(raw_password) or stored_password == raw_password
+    return verify_password(raw_password, stored_password)
 
 
-def create_pin(pin_data):
-
+def update_user(user_id: int, user_data):
     with Session(engine) as session:
+        user = session.get(User, user_id)
 
+        if not user:
+            return None
+
+        if user_data.username is not None:
+            user.username = user_data.username.strip()
+
+        if user_data.avatar is not None:
+            user.avatar = user_data.avatar.strip() or None
+
+        session.add(user)
+        session.commit()
+        session.refresh(user)
+
+        return user
+
+
+def create_pin(pin_data, user_id: int):
+    with Session(engine) as session:
         pin = Pin(
-            title=pin_data.title,
-            description=pin_data.description,
-            image_url=pin_data.image_url,
-            user_id=pin_data.user_id
+            title=pin_data.title.strip(),
+            description=pin_data.description.strip(),
+            image_url=pin_data.image_url.strip(),
+            user_id=user_id
         )
 
         session.add(pin)
-
         session.commit()
-
         session.refresh(pin)
 
         return pin
 
-def get_all_pins():
 
-    with Session(engine) as session:
-
-        statement = select(Pin)
-
-        pins = session.exec(statement).all()
-
-        return pins
-
-
-def get_all_pins_with_users():
+def get_all_pins_with_users(query: str | None = None):
     with Session(engine) as session:
         statement = select(Pin, User).join(User, Pin.user_id == User.id)
+
+        if query:
+            pattern = f"%{query.strip()}%"
+            statement = statement.where(
+                (Pin.title.like(pattern)) |
+                (Pin.description.like(pattern)) |
+                (User.username.like(pattern))
+            )
+
         rows = session.exec(statement).all()
 
         return [
@@ -90,18 +98,11 @@ def get_all_pins_with_users():
             }
             for pin, user in rows
         ]
-    
+
 
 def get_pin_by_id(pin_id: int):
-
     with Session(engine) as session:
-
-        pin = session.get(
-            Pin,
-            pin_id
-        )
-
-        return pin
+        return session.get(Pin, pin_id)
 
 
 def get_pin_with_user_by_id(pin_id: int):
@@ -121,17 +122,45 @@ def get_pin_with_user_by_id(pin_id: int):
         }
 
 
+def update_pin(pin_id: int, pin_data, user_id: int):
+    with Session(engine) as session:
+        pin = session.get(Pin, pin_id)
+
+        if not pin:
+            return None, "not_found"
+
+        if pin.user_id != user_id:
+            return None, "forbidden"
+
+        if pin_data.title is not None:
+            pin.title = pin_data.title.strip()
+
+        if pin_data.description is not None:
+            pin.description = pin_data.description.strip()
+
+        session.add(pin)
+        session.commit()
+        session.refresh(pin)
+
+        return pin, None
+
+
 def get_pins_by_user(user_id: int):
     with Session(engine) as session:
         statement = select(Pin).where(Pin.user_id == user_id)
         return session.exec(statement).all()
 
 
-def create_comment(pin_id: int, comment_data):
+def create_comment(pin_id: int, comment_data, user_id: int):
     with Session(engine) as session:
+        pin = session.get(Pin, pin_id)
+
+        if not pin:
+            return None
+
         comment = Comment(
-            content=comment_data.content,
-            user_id=comment_data.user_id,
+            content=comment_data.content.strip(),
+            user_id=user_id,
             pin_id=pin_id
         )
 
@@ -165,6 +194,11 @@ def get_comments_by_pin(pin_id: int):
 
 def save_pin(pin_id: int, user_id: int):
     with Session(engine) as session:
+        pin = session.get(Pin, pin_id)
+
+        if not pin:
+            return None
+
         statement = select(SavedPin).where(
             SavedPin.pin_id == pin_id,
             SavedPin.user_id == user_id
@@ -193,19 +227,18 @@ def get_saved_pins_by_user(user_id: int):
         return session.exec(statement).all()
 
 
-def delete_pin(pin_id: int):
+def delete_pin(pin_id: int, user_id: int):
     with Session(engine) as session:
         pin = session.get(Pin, pin_id)
 
         if not pin:
-            return False
+            return "not_found"
 
-        comments = session.exec(
-            select(Comment).where(Comment.pin_id == pin_id)
-        ).all()
-        saved_pins = session.exec(
-            select(SavedPin).where(SavedPin.pin_id == pin_id)
-        ).all()
+        if pin.user_id != user_id:
+            return "forbidden"
+
+        comments = session.exec(select(Comment).where(Comment.pin_id == pin_id)).all()
+        saved_pins = session.exec(select(SavedPin).where(SavedPin.pin_id == pin_id)).all()
 
         for comment in comments:
             session.delete(comment)
@@ -216,20 +249,25 @@ def delete_pin(pin_id: int):
         session.delete(pin)
         session.commit()
 
-        return True
+        return None
 
 
-def delete_comment(comment_id: int):
+def delete_comment(comment_id: int, user_id: int):
     with Session(engine) as session:
         comment = session.get(Comment, comment_id)
 
         if not comment:
-            return False
+            return "not_found"
+
+        pin = session.get(Pin, comment.pin_id)
+
+        if comment.user_id != user_id and pin and pin.user_id != user_id:
+            return "forbidden"
 
         session.delete(comment)
         session.commit()
 
-        return True
+        return None
 
 
 def unsave_pin(pin_id: int, user_id: int):

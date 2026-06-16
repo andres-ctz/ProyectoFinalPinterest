@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.database import create_db
 from app.routers import users, pins
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title="Pinterest Clone API"
@@ -21,6 +22,8 @@ app.add_middleware(
 app.include_router(users.router)
 
 app.include_router(pins.router)
+
+app.mount("/uploads", StaticFiles(directory="app/uploads"), name="uploads")
 
 @app.on_event("startup")
 def on_startup():

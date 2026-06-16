@@ -40,8 +40,8 @@ if (registerForm) {
         };
 
         try {
-            const user = await postAuth("/users/register", payload);
-            setCurrentUser(user);
+            const data = await postAuth("/users/register", payload);
+            setCurrentSession(data);
             showAuthMessage("Cuenta creada correctamente.", "success");
             window.location.href = "index.html";
         } catch (error) {
@@ -67,7 +67,7 @@ if (loginForm) {
                 return;
             }
 
-            setCurrentUser(data.user);
+            setCurrentSession(data);
             showAuthMessage("Sesion iniciada correctamente.", "success");
             window.location.href = "index.html";
         } catch (error) {

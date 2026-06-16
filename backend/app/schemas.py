@@ -1,5 +1,6 @@
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
 from sqlmodel import SQLModel
 
 
@@ -15,20 +16,35 @@ class UserRead(SQLModel):
     email: str
     avatar: Optional[str] = None
 
+
+class UserUpdate(SQLModel):
+    username: Optional[str] = None
+    avatar: Optional[str] = None
+
+
 class UserLogin(SQLModel):
     email: str
     password: str
 
-class LoginResponse(SQLModel):
+
+class AuthResponse(SQLModel):
     success: bool
     message: str
     user: Optional[UserRead] = None
+    access_token: Optional[str] = None
+    token_type: str = "bearer"
+
 
 class PinCreate(SQLModel):
     title: str
     description: str
     image_url: str
-    user_id: int
+
+
+class PinUpdate(SQLModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+
 
 class PinRead(SQLModel):
     id: int
@@ -38,13 +54,15 @@ class PinRead(SQLModel):
     created_at: datetime
     user_id: int
 
+
 class PinWithUser(PinRead):
     username: Optional[str] = None
     avatar: Optional[str] = None
 
+
 class CommentCreate(SQLModel):
     content: str
-    user_id: int
+
 
 class CommentRead(SQLModel):
     id: int
@@ -55,8 +73,6 @@ class CommentRead(SQLModel):
     username: Optional[str] = None
     avatar: Optional[str] = None
 
-class SavePinCreate(SQLModel):
-    user_id: int
 
 class SavedPinRead(SQLModel):
     id: int

@@ -1,33 +1,66 @@
-const SESSION_KEY = "pinterest_user";
+const SESSION_KEY = "pinterest_session";
+const LEGACY_SESSION_KEY = "pinterest_user";
 
-function getCurrentUser() {
-    const storedUser = localStorage.getItem(SESSION_KEY);
+function getSession() {
+    const storedSession = localStorage.getItem(SESSION_KEY);
+    const legacyUser = localStorage.getItem(LEGACY_SESSION_KEY);
 
-    if (!storedUser) {
+    if (!storedSession && legacyUser) {
+        try {
+            return {
+                user: JSON.parse(legacyUser),
+                access_token: null
+            };
+        } catch (error) {
+            localStorage.removeItem(LEGACY_SESSION_KEY);
+        }
+    }
+
+    if (!storedSession) {
         return null;
     }
 
     try {
-        return JSON.parse(storedUser);
+        return JSON.parse(storedSession);
     } catch (error) {
         localStorage.removeItem(SESSION_KEY);
         return null;
     }
 }
 
+function getCurrentUser() {
+    return getSession()?.user || null;
+}
+
+function getAuthToken() {
+    return getSession()?.access_token || null;
+}
+
+function setCurrentSession(data) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+        user: data.user,
+        access_token: data.access_token
+    }));
+    localStorage.removeItem(LEGACY_SESSION_KEY);
+}
+
 function setCurrentUser(user) {
-    localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+    setCurrentSession({
+        user,
+        access_token: getAuthToken()
+    });
 }
 
 function logout() {
     localStorage.removeItem(SESSION_KEY);
+    localStorage.removeItem(LEGACY_SESSION_KEY);
     window.location.href = "login.html";
 }
 
 function requireUser() {
     const user = getCurrentUser();
 
-    if (!user) {
+    if (!user || !getAuthToken()) {
         window.location.href = "login.html";
         return null;
     }

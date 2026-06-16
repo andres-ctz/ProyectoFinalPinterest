@@ -9,6 +9,8 @@ const createdCount = document.getElementById("created-count");
 const savedCount = document.getElementById("saved-count");
 const profilePins = document.getElementById("profile-pins");
 const tabs = document.querySelectorAll("[data-tab]");
+const editProfileButton = document.getElementById("edit-profile-btn");
+const profileMessage = document.getElementById("profile-message");
 
 let createdPins = [];
 let savedPins = [];
@@ -26,7 +28,7 @@ function renderPinGrid(pins) {
         card.className = "pin-card";
         card.innerHTML = `
             <a href="detalle.html?id=${pin.id}">
-                <img src="${pin.image_url}" alt="${pin.title || "Pin"}" loading="lazy">
+                <img src="${resolveImageUrl(pin.image_url)}" alt="${pin.title || "Pin"}" loading="lazy">
             </a>
             <div class="pin-overlay"><span>${pin.title || "Ver pin"}</span></div>
         `;
@@ -70,6 +72,7 @@ async function loadProfile() {
         profileUsername.textContent = `@${user.username}`;
         createdCount.textContent = createdPins.length;
         savedCount.textContent = savedPins.length;
+        editProfileButton.style.display = currentSessionUser?.id === user.id ? "" : "none";
         renderPinGrid(createdPins);
     } catch (error) {
         profileName.textContent = "Perfil no disponible";
@@ -80,6 +83,42 @@ async function loadProfile() {
 
 tabs.forEach((tab) => {
     tab.addEventListener("click", () => activateTab(tab.dataset.tab));
+});
+
+editProfileButton.addEventListener("click", async () => {
+    const nextUsername = window.prompt("Nuevo nombre de usuario", profileName.textContent);
+    const nextAvatar = window.prompt("URL de avatar opcional", "");
+
+    if (!nextUsername) {
+        return;
+    }
+
+    try {
+        const response = await apiFetch("/users/me", {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: nextUsername,
+                avatar: nextAvatar
+            })
+        });
+
+        const user = await response.json();
+
+        if (!response.ok) {
+            throw new Error(user.detail || "No se pudo editar el perfil");
+        }
+
+        setCurrentUser(user);
+        profileMessage.textContent = "Perfil actualizado.";
+        profileMessage.className = "form-message success";
+        await loadProfile();
+    } catch (error) {
+        profileMessage.textContent = error.message;
+        profileMessage.className = "form-message";
+    }
 });
 
 loadProfile();

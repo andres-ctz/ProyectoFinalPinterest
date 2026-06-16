@@ -4,9 +4,8 @@ const imageFileInput = document.getElementById("image_file");
 const imagePreview = document.getElementById("image-preview");
 const previewPlaceholder = document.getElementById("preview-placeholder");
 const createMessage = document.getElementById("create-message");
-let uploadedImageData = "";
 
-const currentUser = requireUser();
+requireUser();
 
 function showCreateMessage(message, type = "error") {
     createMessage.textContent = message;
@@ -27,7 +26,6 @@ function setPreview(src) {
 }
 
 imageUrlInput.addEventListener("input", () => {
-    uploadedImageData = "";
     imageFileInput.value = "";
     setPreview(imageUrlInput.value.trim());
 });
@@ -39,42 +37,49 @@ imageFileInput.addEventListener("change", () => {
         return;
     }
 
-    const reader = new FileReader();
-
-    reader.addEventListener("load", () => {
-        uploadedImageData = reader.result;
-        imageUrlInput.value = "";
-        setPreview(uploadedImageData);
-    });
-
-    reader.readAsDataURL(file);
+    setPreview(URL.createObjectURL(file));
+    imageUrlInput.value = "";
 });
 
 createForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    const imageUrl = uploadedImageData || imageUrlInput.value.trim();
+    const title = createForm.title.value.trim();
+    const description = createForm.description.value.trim();
+    const file = imageFileInput.files[0];
+    const imageUrl = imageUrlInput.value.trim();
 
-    if (!imageUrl) {
+    if (!file && !imageUrl) {
         showCreateMessage("Agrega una imagen con URL o archivo.");
         return;
     }
 
-    const payload = {
-        title: createForm.title.value.trim(),
-        description: createForm.description.value.trim(),
-        image_url: imageUrl,
-        user_id: currentUser.id
-    };
-
     try {
-        const response = await apiFetch("/pins", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
-        });
+        let response;
+
+        if (file) {
+            const formData = new FormData();
+            formData.append("title", title);
+            formData.append("description", description);
+            formData.append("image", file);
+
+            response = await apiFetch("/pins/upload", {
+                method: "POST",
+                body: formData
+            });
+        } else {
+            response = await apiFetch("/pins", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    title,
+                    description,
+                    image_url: imageUrl
+                })
+            });
+        }
 
         const pin = await response.json();
 

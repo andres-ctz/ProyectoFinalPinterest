@@ -1,4 +1,5 @@
 const pinsContainer = document.getElementById("pins-container");
+const searchInput = document.querySelector(".search-bar input");
 
 function renderState(message) {
     pinsContainer.innerHTML = `<p class="state-message">${message}</p>`;
@@ -13,7 +14,7 @@ function createPinCard(pin) {
     link.setAttribute("aria-label", `Ver detalle de ${pin.title}`);
 
     const image = document.createElement("img");
-    image.src = pin.image_url;
+    image.src = resolveImageUrl(pin.image_url);
     image.alt = pin.title || "Imagen del pin";
     image.loading = "lazy";
 
@@ -40,13 +41,7 @@ function createPinCard(pin) {
 
         try {
             const response = await apiFetch(`/pins/${pin.id}/save`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_id: user.id
-                })
+                method: "POST"
             });
 
             if (!response.ok) {
@@ -67,11 +62,12 @@ function createPinCard(pin) {
     return card;
 }
 
-async function loadPins() {
+async function loadPins(query = "") {
     try {
         renderState("Cargando pines...");
 
-        const response = await apiFetch("/pins");
+        const search = query ? `?q=${encodeURIComponent(query)}` : "";
+        const response = await apiFetch(`/pins${search}`);
 
         if (!response.ok) {
             throw new Error("No se pudieron cargar los pines");
@@ -92,6 +88,12 @@ async function loadPins() {
         console.error(error);
         renderState("No se pudo conectar con la API. Revisa que el backend este encendido.");
     }
+}
+
+if (searchInput) {
+    searchInput.addEventListener("input", () => {
+        loadPins(searchInput.value.trim());
+    });
 }
 
 loadPins();

@@ -15,6 +15,7 @@
         <nav class="nav-links" aria-label="Navegacion principal">
             <a href="index.html" class="active">Inicio</a>
             <a href="#explorar">Explorar</a>
+            <a href="crear-pin.html" data-user-link>Crear</a>
         </nav>
 
         <label class="search-bar">
@@ -23,8 +24,9 @@
         </label>
 
         <div class="nav-actions">
-            <a href="login.html" class="btn btn-ghost">Entrar</a>
-            <a href="usuario.html" class="avatar-link" aria-label="Ver perfil">D</a>
+            <a href="login.html" class="btn btn-ghost" data-auth-link>Entrar</a>
+            <button class="btn btn-ghost" type="button" data-user-link data-logout>Salir</button>
+            <a href="usuario.html" class="avatar-link" aria-label="Ver perfil" data-avatar>D</a>
         </div>
     </header>
 
@@ -33,7 +35,8 @@
             <p class="eyebrow">Akemi PinSaved - Explora y guarda ideas</p>
             <h1>Encuentra referencias visuales para tu proximo proyecto.</h1>
         </div>
-        <a class="btn btn-primary" href="register.html">Crear cuenta</a>
+        <a class="btn btn-primary" href="register.html" data-auth-link>Crear cuenta</a>
+        <a class="btn btn-primary" href="crear-pin.html" data-user-link>Crear pin</a>
     </section>
 
     <main class="page-shell">
@@ -48,6 +51,7 @@
     </main>
 
     <script src="js/config.js"></script>
+    <script src="js/session.js"></script>
     <script src="js/home.js"></script>
 </body>
 </html>
