@@ -31,7 +31,7 @@ BLOCKED_TERMS = {
     ],
     "violencia o armas": [
         "arma", "armas", "gun", "guns", "pistola", "rifle", "sangre",
-        "gore", "asesinato", "matar", "kill", "weapon","mueranse", "muere", "asesino", "asesinos", "asesinar", "asesinato", "asesinatos",
+        "gore", "asesinato", "matar", "kill", "weapon","mueranse", "muere", "asesino", "asesinos", "asesinar", "asesinato", "asesinatos","muerase",
         "asesinatos", "mueran", "mueranse", "mataron", "matarme", "matarte", "matarlo", "matarla", "matarles", "mataros", "matarse", "asesinando", "asesinandoos", "asesinandonos","negros","negro","nigger","niggers","negra","negras","negros"
     ]
 }
