@@ -11,9 +11,21 @@ const profilePins = document.getElementById("profile-pins");
 const tabs = document.querySelectorAll("[data-tab]");
 const editProfileButton = document.getElementById("edit-profile-btn");
 const profileMessage = document.getElementById("profile-message");
+const editProfileModal = document.getElementById("edit-profile-modal");
+const editProfileForm = document.getElementById("edit-profile-form");
+const editProfileUsername = document.getElementById("edit-profile-username");
+const editProfileAvatar = document.getElementById("edit-profile-avatar");
+const editProfileMessage = document.getElementById("edit-profile-message");
 
 let createdPins = [];
 let savedPins = [];
+let loadedUser = null;
+
+function closeModal(modal) {
+    if (modal?.open) {
+        modal.close();
+    }
+}
 
 function renderPinGrid(pins) {
     profilePins.replaceChildren();
@@ -67,6 +79,7 @@ async function loadProfile() {
             throw new Error(user.detail || "No se pudo cargar el usuario");
         }
 
+        loadedUser = user;
         profileAvatar.textContent = user.username?.charAt(0)?.toUpperCase() || "U";
         profileName.textContent = user.username;
         profileUsername.textContent = `@${user.username}`;
@@ -85,13 +98,19 @@ tabs.forEach((tab) => {
     tab.addEventListener("click", () => activateTab(tab.dataset.tab));
 });
 
-editProfileButton.addEventListener("click", async () => {
-    const nextUsername = window.prompt("Nuevo nombre de usuario", profileName.textContent);
-    const nextAvatar = window.prompt("URL de avatar opcional", "");
-
-    if (!nextUsername) {
+editProfileButton.addEventListener("click", () => {
+    if (!loadedUser) {
         return;
     }
+
+    editProfileUsername.value = loadedUser.username || "";
+    editProfileAvatar.value = loadedUser.avatar || "";
+    editProfileMessage.textContent = "";
+    editProfileModal.showModal();
+});
+
+editProfileForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
     try {
         const response = await apiFetch("/users/me", {
@@ -100,8 +119,8 @@ editProfileButton.addEventListener("click", async () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                username: nextUsername,
-                avatar: nextAvatar
+                username: editProfileUsername.value.trim(),
+                avatar: editProfileAvatar.value.trim()
             })
         });
 
@@ -112,13 +131,18 @@ editProfileButton.addEventListener("click", async () => {
         }
 
         setCurrentUser(user);
+        closeModal(editProfileModal);
         profileMessage.textContent = "Perfil actualizado.";
         profileMessage.className = "form-message success";
         await loadProfile();
     } catch (error) {
-        profileMessage.textContent = error.message;
-        profileMessage.className = "form-message";
+        editProfileMessage.textContent = error.message;
+        editProfileMessage.className = "form-message";
     }
+});
+
+document.querySelectorAll("[data-close-modal]").forEach((button) => {
+    button.addEventListener("click", () => closeModal(button.closest("dialog")));
 });
 
 loadProfile();

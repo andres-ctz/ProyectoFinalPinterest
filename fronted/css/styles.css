@@ -19,6 +19,10 @@
     padding: 0;
 }
 
+[hidden] {
+    display: none !important;
+}
+
 body {
     min-height: 100vh;
     background:
@@ -338,6 +342,22 @@ textarea {
     padding: 18px 20px;
 }
 
+.state-message.loading::before {
+    animation: pulse 1s ease-in-out infinite;
+    content: "";
+    background: var(--accent);
+    border-radius: 50%;
+    display: inline-block;
+    height: 8px;
+    margin-right: 10px;
+    width: 8px;
+}
+
+.state-message.error {
+    border-color: rgba(255, 84, 140, 0.55);
+    color: #ff9fbd;
+}
+
 .detail-container {
     display: flex;
     justify-content: center;
@@ -636,6 +656,77 @@ textarea {
 
 .form-message.success {
     color: var(--accent);
+}
+
+.modal {
+    background: transparent;
+    border: 0;
+    margin: auto;
+    max-width: min(560px, calc(100vw - 28px));
+    padding: 0;
+    width: 100%;
+}
+
+.modal::backdrop {
+    background: rgba(3, 0, 8, 0.72);
+    backdrop-filter: blur(10px);
+}
+
+.modal-card {
+    background:
+        radial-gradient(circle at top right, rgba(189, 53, 255, 0.18), transparent 34%),
+        var(--surface);
+    border: 1px solid rgba(24, 245, 255, 0.22);
+    border-radius: 24px;
+    box-shadow: var(--shadow);
+    color: var(--text);
+    display: grid;
+    gap: 16px;
+    padding: 26px;
+}
+
+.modal-header {
+    align-items: start;
+    display: flex;
+    gap: 16px;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    font-size: 28px;
+}
+
+.modal-close {
+    align-items: center;
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    color: var(--text);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 24px;
+    height: 42px;
+    justify-content: center;
+    width: 42px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.35;
+        transform: scale(0.8);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 .create-layout {

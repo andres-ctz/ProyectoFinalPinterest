@@ -1,4 +1,5 @@
-const API_URL = "http://127.0.0.1:8000";
+const IS_LOCAL = ["127.0.0.1", "localhost"].includes(window.location.hostname);
+const API_URL = IS_LOCAL ? "http://127.0.0.1:8000" : `${window.location.origin}/api`;
 
 function apiFetch(path, options = {}) {
     const token = typeof getAuthToken === "function" ? getAuthToken() : null;
@@ -25,5 +26,5 @@ function resolveImageUrl(url) {
         return url;
     }
 
-    return `${API_URL}${url}`;
+    return IS_LOCAL ? `${API_URL}${url}` : `${window.location.origin}${url}`;
 }

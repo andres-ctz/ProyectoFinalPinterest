@@ -13,6 +13,14 @@ const savePinButton = document.getElementById("save-pin-btn");
 const editPinButton = document.getElementById("edit-pin-btn");
 const deletePinButton = document.getElementById("delete-pin-btn");
 const detailMessage = document.getElementById("detail-message");
+const editPinModal = document.getElementById("edit-pin-modal");
+const editPinForm = document.getElementById("edit-pin-form");
+const editPinTitle = document.getElementById("edit-pin-title");
+const editPinDescription = document.getElementById("edit-pin-description");
+const editPinMessage = document.getElementById("edit-pin-message");
+const deletePinModal = document.getElementById("delete-pin-modal");
+const confirmDeletePinButton = document.getElementById("confirm-delete-pin-btn");
+const deletePinMessage = document.getElementById("delete-pin-message");
 
 let currentPin = null;
 
@@ -21,10 +29,21 @@ function showDetailMessage(message, type = "error") {
     detailMessage.className = `form-message ${type}`;
 }
 
+function showEditPinMessage(message, type = "error") {
+    editPinMessage.textContent = message;
+    editPinMessage.className = `form-message ${type}`;
+}
+
 function renderDetailError(message) {
     title.textContent = message;
     description.textContent = "Vuelve al inicio y selecciona otro pin.";
     image.removeAttribute("src");
+}
+
+function closeModal(modal) {
+    if (modal?.open) {
+        modal.close();
+    }
 }
 
 function renderOwnerActions(pin) {
@@ -161,17 +180,21 @@ savePinButton.addEventListener("click", async () => {
 });
 
 if (editPinButton) {
-    editPinButton.addEventListener("click", async () => {
+    editPinButton.addEventListener("click", () => {
         if (!currentPin) {
             return;
         }
 
-        const nextTitle = window.prompt("Nuevo titulo", currentPin.title);
-        const nextDescription = window.prompt("Nueva descripcion", currentPin.description);
+        editPinTitle.value = currentPin.title || "";
+        editPinDescription.value = currentPin.description || "";
+        showEditPinMessage("");
+        editPinModal.showModal();
+    });
+}
 
-        if (!nextTitle || !nextDescription) {
-            return;
-        }
+if (editPinForm) {
+    editPinForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
 
         try {
             const response = await apiFetch(`/pins/${pinId}`, {
@@ -180,8 +203,8 @@ if (editPinButton) {
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    title: nextTitle,
-                    description: nextDescription
+                    title: editPinTitle.value.trim(),
+                    description: editPinDescription.value.trim()
                 })
             });
 
@@ -191,20 +214,29 @@ if (editPinButton) {
                 throw new Error(data.detail || "No se pudo editar el pin");
             }
 
-            showDetailMessage("Pin editado correctamente.", "success");
+            showEditPinMessage("Pin editado correctamente.", "success");
             await loadPin();
+            closeModal(editPinModal);
+            showDetailMessage("Pin editado correctamente.", "success");
         } catch (error) {
-            showDetailMessage(error.message);
+            showEditPinMessage(error.message);
         }
     });
 }
 
-if (deletePinButton) {
-    deletePinButton.addEventListener("click", async () => {
-        if (!window.confirm("Seguro que quieres borrar este pin?")) {
-            return;
-        }
+document.querySelectorAll("[data-close-modal]").forEach((button) => {
+    button.addEventListener("click", () => closeModal(button.closest("dialog")));
+});
 
+if (deletePinButton) {
+    deletePinButton.addEventListener("click", () => {
+        deletePinMessage.textContent = "";
+        deletePinModal.showModal();
+    });
+}
+
+if (confirmDeletePinButton) {
+    confirmDeletePinButton.addEventListener("click", async () => {
         try {
             const response = await apiFetch(`/pins/${pinId}`, {
                 method: "DELETE"
@@ -218,7 +250,8 @@ if (deletePinButton) {
 
             window.location.href = "index.html";
         } catch (error) {
-            showDetailMessage(error.message);
+            deletePinMessage.textContent = error.message;
+            deletePinMessage.className = "form-message";
         }
     });
 }

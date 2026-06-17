@@ -5,6 +5,14 @@ function renderState(message) {
     pinsContainer.innerHTML = `<p class="state-message">${message}</p>`;
 }
 
+function renderLoading(message) {
+    pinsContainer.innerHTML = `<p class="state-message loading">${message}</p>`;
+}
+
+function renderError(message) {
+    pinsContainer.innerHTML = `<p class="state-message error">${message}</p>`;
+}
+
 function createPinCard(pin) {
     const card = document.createElement("article");
     card.className = "pin-card";
@@ -64,7 +72,7 @@ function createPinCard(pin) {
 
 async function loadPins(query = "") {
     try {
-        renderState("Cargando pines...");
+        renderLoading("Cargando pines...");
 
         const search = query ? `?q=${encodeURIComponent(query)}` : "";
         const response = await apiFetch(`/pins${search}`);
@@ -86,7 +94,7 @@ async function loadPins(query = "") {
         });
     } catch (error) {
         console.error(error);
-        renderState("No se pudo conectar con la API. Revisa que el backend este encendido.");
+        renderError("No se pudo conectar con la API. Revisa que el backend este encendido.");
     }
 }
 

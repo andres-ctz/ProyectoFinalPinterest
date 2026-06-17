@@ -5,7 +5,13 @@ __pycache__/
 database.db
 
 .vscode/
-
+AWS_DEPLOY.md
+DEPLOY.md
 .env
-
+.env.example
 *.swp
+backend/.env
+backend/app/uploads/*
+!backend/app/uploads/.gitkeep
+__pycache__/
+*.pyc

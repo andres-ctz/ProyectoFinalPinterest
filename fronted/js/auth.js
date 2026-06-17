@@ -11,6 +11,27 @@ function showAuthMessage(message, type = "error") {
     authMessage.className = `form-message ${type}`;
 }
 
+function setFormLoading(form, isLoading, message = "") {
+    if (!form) {
+        return;
+    }
+
+    const submitButton = form.querySelector("button[type='submit']");
+
+    if (submitButton) {
+        if (!submitButton.dataset.originalText) {
+            submitButton.dataset.originalText = submitButton.textContent;
+        }
+
+        submitButton.disabled = isLoading;
+        submitButton.textContent = isLoading ? "Procesando..." : submitButton.dataset.originalText;
+    }
+
+    if (message) {
+        showAuthMessage(message, "success");
+    }
+}
+
 async function postAuth(endpoint, payload) {
     const response = await apiFetch(endpoint, {
         method: "POST",
@@ -20,7 +41,13 @@ async function postAuth(endpoint, payload) {
         body: JSON.stringify(payload)
     });
 
-    const data = await response.json();
+    let data = {};
+
+    try {
+        data = await response.json();
+    } catch (error) {
+        throw new Error("El servidor no respondio en formato valido. Revisa que el backend este corriendo en 127.0.0.1:8000.");
+    }
 
     if (!response.ok) {
         throw new Error(data.detail || "No se pudo completar la accion");
@@ -40,12 +67,15 @@ if (registerForm) {
         };
 
         try {
+            setFormLoading(registerForm, true, "Creando cuenta...");
             const data = await postAuth("/users/register", payload);
+
             setCurrentSession(data);
-            showAuthMessage("Cuenta creada correctamente.", "success");
             window.location.href = "index.html";
         } catch (error) {
             showAuthMessage(error.message);
+        } finally {
+            setFormLoading(registerForm, false);
         }
     });
 }
@@ -60,6 +90,7 @@ if (loginForm) {
         };
 
         try {
+            setFormLoading(loginForm, true, "Iniciando sesion...");
             const data = await postAuth("/users/login", payload);
 
             if (!data.success) {
@@ -68,10 +99,11 @@ if (loginForm) {
             }
 
             setCurrentSession(data);
-            showAuthMessage("Sesion iniciada correctamente.", "success");
             window.location.href = "index.html";
         } catch (error) {
             showAuthMessage(error.message);
+        } finally {
+            setFormLoading(loginForm, false);
         }
     });
 }
