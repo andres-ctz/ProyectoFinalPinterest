@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from app.auth import create_access_token, get_current_user
 from app.crud import (
     create_user,
+    delete_all_users,
     get_pins_by_user,
     get_saved_pins_by_user,
     get_user_by_email,
@@ -12,7 +13,14 @@ from app.crud import (
     update_user
 )
 from app.models import User
-from app.schemas import AuthResponse, PinRead, UserCreate, UserLogin, UserRead, UserUpdate
+from app.schemas import (
+    AuthResponse,
+    PinRead,
+    UserCreate,
+    UserLogin,
+    UserRead,
+    UserUpdate,
+)
 
 
 router = APIRouter(
@@ -87,6 +95,23 @@ def update_me(user_data: UserUpdate, current_user: User = Depends(get_current_us
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
     return user
+
+
+@router.delete("")
+def delete_every_user(confirm: bool = False):
+    if not confirm:
+        raise HTTPException(
+            status_code=400,
+            detail="Esta accion borra todos los usuarios. Usa ?confirm=true para confirmar."
+        )
+
+    deleted_count = delete_all_users()
+
+    return {
+        "success": True,
+        "message": "Todos los usuarios fueron eliminados correctamente",
+        "deleted_users": deleted_count
+    }
 
 
 @router.get("/{user_id}", response_model=UserRead)

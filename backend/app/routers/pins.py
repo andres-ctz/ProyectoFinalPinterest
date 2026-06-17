@@ -1,4 +1,5 @@
 import os
+import contextlib
 import shutil
 from uuid import uuid4
 
@@ -16,6 +17,13 @@ from app.crud import (
     save_pin,
     unsave_pin,
     update_pin
+)
+from app.moderation import (
+    ModerationBlocked,
+    block_message,
+    moderate_image_file,
+    moderate_image_url,
+    moderate_text
 )
 from app.models import User
 from app.schemas import (
@@ -44,6 +52,15 @@ def public_upload_url(filename: str) -> str:
 
 @router.post("", response_model=PinRead)
 def create_new_pin(pin: PinCreate, current_user: User = Depends(get_current_user)):
+    try:
+        moderate_text(f"{pin.title}\n{pin.description}")
+        moderate_image_url(
+            pin.image_url,
+            f"Titulo: {pin.title}\nDescripcion: {pin.description}"
+        )
+    except ModerationBlocked as error:
+        raise block_message("este pin", error.categories) from error
+
     return create_pin(pin, current_user.id)
 
 
@@ -63,6 +80,18 @@ def create_pin_with_upload(
 
     with open(file_path, "wb") as destination:
         shutil.copyfileobj(image.file, destination)
+
+    try:
+        moderate_text(f"{title}\n{description}")
+        moderate_image_file(
+            file_path,
+            f"Titulo: {title}\nDescripcion: {description}",
+            image.content_type
+        )
+    except ModerationBlocked as error:
+        with contextlib.suppress(FileNotFoundError):
+            os.remove(file_path)
+        raise block_message("este pin", error.categories) from error
 
     pin = PinCreate(
         title=title,
@@ -90,6 +119,11 @@ def get_pin(pin_id: int):
 
 @router.patch("/{pin_id}", response_model=PinRead)
 def edit_pin(pin_id: int, pin_data: PinUpdate, current_user: User = Depends(get_current_user)):
+    try:
+        moderate_text(f"{pin_data.title or ''}\n{pin_data.description or ''}")
+    except ModerationBlocked as error:
+        raise block_message("los cambios del pin", error.categories) from error
+
     pin, error = update_pin(pin_id, pin_data, current_user.id)
 
     if error == "not_found":
@@ -103,6 +137,11 @@ def edit_pin(pin_id: int, pin_data: PinUpdate, current_user: User = Depends(get_
 
 @router.post("/{pin_id}/comments", response_model=CommentRead)
 def add_comment(pin_id: int, comment: CommentCreate, current_user: User = Depends(get_current_user)):
+    try:
+        moderate_text(comment.content)
+    except ModerationBlocked as error:
+        raise block_message("este comentario", error.categories) from error
+
     new_comment = create_comment(pin_id, comment, current_user.id)
 
     if not new_comment:

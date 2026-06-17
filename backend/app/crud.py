@@ -285,3 +285,28 @@ def unsave_pin(pin_id: int, user_id: int):
         session.commit()
 
         return True
+
+
+def delete_all_users():
+    with Session(engine) as session:
+        comments = session.exec(select(Comment)).all()
+        saved_pins = session.exec(select(SavedPin)).all()
+        pins = session.exec(select(Pin)).all()
+        users = session.exec(select(User)).all()
+
+        for comment in comments:
+            session.delete(comment)
+
+        for saved_pin in saved_pins:
+            session.delete(saved_pin)
+
+        for pin in pins:
+            session.delete(pin)
+
+        for user in users:
+            session.delete(user)
+
+        deleted_count = len(users)
+        session.commit()
+
+        return deleted_count
