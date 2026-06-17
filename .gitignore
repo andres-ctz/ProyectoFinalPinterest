@@ -8,7 +8,6 @@ database.db
 AWS_DEPLOY.md
 DEPLOY.md
 .env
-.env.example
 *.swp
 backend/.env
 backend/app/uploads/*
